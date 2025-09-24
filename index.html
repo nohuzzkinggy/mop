@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Marley — Orion Drift VR Player</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <meta name="description" content="Marley — Orion Drift VR player, live streams, highlights, and gameplay." />
+  <style>
+    :root{
+      --bg1:#05070f;
+      --accent:#7c5cff;
+      --accent2:#00e0ff;
+      --muted: rgba(255,255,255,0.65);
+      --radius:16px;
+      color-scheme: dark;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,"Helvetica Neue",Arial;overflow-x:hidden}
+    body{color:#eef2ff;line-height:1.45;padding:36px;position:relative;z-index:0;background:var(--bg1)}
+
+    /* Starfield */
+    .starfield{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;overflow:hidden;background:var(--bg1)}
+    .star{position:absolute;width:2px;height:2px;background:white;border-radius:50%;opacity:0.8;animation:twinkle 3s infinite ease-in-out}
+    @keyframes twinkle{0%,100%{opacity:0.2}50%{opacity:1}}
+
+    /* Parallax spaceship + piano */
+    .parallax-overlay{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:-1;overflow:hidden}
+    .parallax-item{position:absolute;will-change:transform;opacity:0.7}
+    .ship{width:240px;bottom:20%;left:10%}
+    .piano{width:320px;top:15%;right:8%}
+
+    .container{max-width:1100px;margin:0 auto;position:relative;z-index:1}
+    header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:28px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:64px;height:64px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 6px 24px rgba(2,6,23,0.6);font-family:'Playfair Display',serif;font-weight:700;font-size:20px;color:white;animation:glow 3s infinite alternate}
+    @keyframes glow{0%{box-shadow:0 0 8px var(--accent)}100%{box-shadow:0 0 24px var(--accent2)}}
+    .site-title{font-family:'Playfair Display',serif;font-size:20px}
+    .site-sub{font-size:12px;color:var(--muted)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:16px;font-weight:600;transition:color .3s}
+    nav a:hover{color:var(--accent2)}
+    .hero{background:linear-gradient(180deg, rgba(255,255,255,0.04), transparent);border-radius:var(--radius);padding:36px;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:center;margin-bottom:28px;box-shadow:0 10px 30px rgba(2,6,23,0.6);animation:fadeIn 1.5s ease forwards}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .hero h1{font-family:'Playfair Display',serif;font-size:44px;margin:0 0 8px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;color:transparent;animation:shine 6s linear infinite;background-size:200%}
+    @keyframes shine{0%{background-position:0%}100%{background-position:200%}}
+    .hero p{margin:0 0 18px;color:var(--muted);font-size:15px}
+    .cta{display:flex;gap:12px}
+    .btn{background:linear-gradient(90deg,var(--accent),var(--accent2));border:none;padding:12px 18px;border-radius:12px;color:white;font-weight:600;cursor:pointer;transition:transform .2s}
+    .btn:hover{transform:scale(1.05)}
+    .btn.alt{background:transparent;border:1px solid rgba(255,255,255,0.2)}
+    section{margin-bottom:22px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.05), transparent);padding:18px;border-radius:14px;box-shadow:0 8px 30px rgba(2,6,23,0.45);backdrop-filter:blur(6px)}
+    @media (max-width:980px){.hero{grid-template-columns:1fr}}
+    @media (max-width:640px){body{padding:18px}.brand .logo{width:52px;height:52px;font-size:18px}.hero h1{font-size:32px}}
+    footer{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px;margin-top:12px}
+    .form-row{display:flex;gap:12px}
+    .form-row input,.form-row textarea{flex:1;padding:10px;border-radius:10px;border:0;background:rgba(255,255,255,0.03);color:inherit}
+    .form-row textarea{min-height:96px;resize:vertical}
+    .underline{display:inline-block;padding-bottom:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .muted{color:var(--muted)}
+    a.social{display:inline-flex;align-items:center;gap:8px;padding:8px;border-radius:10px;text-decoration:none;color:var(--muted);transition:color .3s}
+    a.social:hover{color:var(--accent2)}
+  </style>
+</head>
+<body>
+  <div class="starfield" id="starfield"></div>
+  <div class="parallax-overlay">
+    <img src="https://dummyimage.com/240x120/7c5cff/ffffff&text=Spaceship" alt="Spaceship" class="parallax-item ship">
+    <img src="https://dummyimage.com/320x120/00e0ff/ffffff&text=Piano" alt="Piano" class="parallax-item piano">
+  </div>
+
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">M</div>
+        <div>
+          <div class="site-title">Marley</div>
+          <div class="site-sub">Aka Piano Player OD</div>
+        </div>
+      </div>
+      <nav>
+        <a href="#gameplay">Gameplay</a>
+        <a href="#highlights">Highlights</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero card">
+        <div>
+          <h1>Marley <span class="underline">Aka Piano Player OD</span></h1>
+          <p>Marley is a dedicated <strong>Orion Drift VR</strong> player. Explore his epic runs, highlights, and live-streamed adventures through the galaxy.</p>
+          <div class="cta">
+            <button class="btn" onclick="document.getElementById('gameplay').scrollIntoView({behavior:'smooth'})">Watch Gameplay</button>
+            <button class="btn alt" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Contact</button>
+          </div>
+        </div>
+        <aside style="text-align:center">
+          <img src="https://dummyimage.com/360x220/05070f/7c5cff&text=Orion+Drift+VR" alt="Orion Drift Screenshot" style="border-radius:12px;box-shadow:0 0 20px rgba(124,92,255,0.6)" />
+          <div style="margin-top:8px;font-size:13px;color:var(--muted)">Gameplay moments from Orion Drift VR</div>
+        </aside>
+      </section>
+
+      <section id="gameplay">
+        <h3 style="margin-bottom:10px">Gameplay</h3>
+        <div class="card">
+          <p class="muted">Catch Marley’s latest Orion Drift VR sessions:</p>
+          <ul style="margin:0;padding:0;list-style:none">
+            <li style="padding:12px;border-bottom:1px solid rgba(255,255,255,0.03)">🎥 Watch live on <a href="#">Twitch</a></li>
+            <li style="padding:12px;border-bottom:1px solid rgba(255,255,255,0.03)">📺 Replays available on <a href="#">YouTube</a></li>
+            <li style="padding:12px">🚀 Special highlights posted weekly</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="highlights">
+        <h3 style="margin-bottom:10px">Highlights</h3>
+        <div class="card">
+          <p class="muted">Best clips and victories from Marley’s Orion Drift VR journey.</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:12px">
+            <iframe width="100%" height="160" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Highlight 1" frameborder="0" allowfullscreen style="border-radius:12px"></iframe>
+            <iframe width="100%" height="160" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Highlight 2" frameborder="0" allowfullscreen style="border-radius:12px"></iframe>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact">
+        <h3 style="margin-bottom:10px">Contact</h3>
+        <div class="card">
+          <p class="muted">For collabs, streams, or gaming events — reach out to Marley.</p>
+          <form onsubmit="event.preventDefault();sendMessage()">
+            <div class="form-row" style="margin-top:10px">
+              <input id="name" type="text" placeholder="Your name" required />
+              <input id="email" type="email" placeholder="Email" required />
+            </div>
+            <div style="margin-top:10px">
+              <textarea id="message" placeholder="Your message" required></textarea>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+              <button class="btn" type="submit">Send Message</button>
+              <div id="status" style="color:var(--muted);font-size:13px"></div>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="muted">© Marley — Orion Drift VR</div>
+      <div>
+        <a class="social" href="#" title="YouTube">YouTube</a>
+        <a class="social" href="#" title="Twitch">Twitch</a>
+        <a class="social" href="#" title="Discord">Discord</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Contact form
+    function sendMessage(){
+      const name=document.getElementById('name').value.trim();
+      const email=document.getElementById('email').value.trim();
+      const message=document.getElementById('message').value.trim();
+      const status=document.getElementById('status');
+      if(!name||!email||!message){status.textContent='Please fill all fields.';return}
+      const subject=encodeURIComponent('Message: '+name);
+      const body=encodeURIComponent(message+'\n\nFrom: '+name+' ('+email+')');
+      window.location.href='mailto:marley@example.com?subject='+subject+'&body='+body;
+      status.textContent='Opening mail client...';
+    }
+
+    // Starfield generator
+    function createStars(){
+      const starfield=document.getElementById('starfield');
+      const stars=120;
+      for(let i=0;i<stars;i++){
+        const star=document.createElement('div');
+        star.className='star';
+        star.style.top=Math.random()*100+'%';
+        star.style.left=Math.random()*100+'%';
+        star.style.animationDuration=(2+Math.random()*3)+'s';
+        starfield.appendChild(star);
+      }
+    }
+    createStars();
+
+    // Parallax effect for overlay images
+    document.addEventListener('mousemove', e =>{
+      const x=(e.clientX/window.innerWidth-0.5)*30;
+      const y=(e.clientY/window.innerHeight-0.5)*30;
+      document.querySelectorAll('.parallax-item').forEach(item=>{
+        item.style.transform=`translate(${x}px, ${y}px)`;
+      });
+    });
+  </script>
+</body>
+</html>
